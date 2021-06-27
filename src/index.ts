@@ -24,7 +24,7 @@ yargs
         y.alias('a', 'apiPath')
             .nargs('a', 1)
             .describe('a', 'OpenAPI 3.0 API descriptor file (yaml)')
-            .alias('p', 'targetPath')
+            .alias('t', 'rootPath')
             .nargs('t', 1)
             .describe('t', 'Root path for the Chill API configuration files')
             .default('t', '.chill-api')
