@@ -1,6 +1,6 @@
 {
   "name": "@chillapi/core",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "ChillAPI development platform",
   "main": "dist/index.js",
   "scripts": {
@@ -34,7 +34,7 @@
   "homepage": "https://github.com/chillapi#readme",
   "dependencies": {
     "@chillapi/api": "1.0.19",
-    "@chillapi/module-discovery": "1.0.3",
+    "@chillapi/module-discovery": "1.0.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-openapi-validator": "^4.0.2",
