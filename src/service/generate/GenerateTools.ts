@@ -9,8 +9,8 @@ import { load as yamlLoad } from 'js-yaml';
 export async function generate(apiPath: string, rootPath: string, moduleName?: string): Promise<void> {
     try {
         const api = await loadApi(apiPath);
-        const module: ModuleLoader = moduleName ? require(moduleName) : await this.loadModule();
-        await module.generateStubs(api, rootPath);
+        const moduleClass = moduleName ? require(moduleName) : await this.loadModule();
+        await new moduleClass().generateStubs(api, rootPath);
         return Promise.resolve();
     } catch (err) {
         return Promise.reject(err);
