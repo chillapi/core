@@ -2,7 +2,7 @@ import { ModuleLoader, OpenAPIV3 } from '@chillapi/api';
 import { load } from '@chillapi/module-discovery/dist';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
-import { safeLoad } from 'js-yaml';
+import { load as yamlLoad } from 'js-yaml';
 
 
 export async function generate(apiPath: string, rootPath: string, moduleName?: string): Promise<void> {
@@ -31,7 +31,7 @@ export async function loadApi(apiPath: string): Promise<OpenAPIV3> {
     if (existsSync(apiPath)) {
         try {
             const apiContent = await readFile(apiPath, 'utf-8');
-            return safeLoad(apiContent) as OpenAPIV3;
+            return yamlLoad(apiContent) as OpenAPIV3;
         } catch (err) {
             console.error(`Unable to load API file from ${apiPath}`);
             console.error(err);
