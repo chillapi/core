@@ -6,69 +6,6 @@ describe('Builtin delegate loading tests', () => {
 
     const cases: any[] = [
         [
-            'Assert Delegate',
-            null,
-            {
-                kind: 'MethodDelegate',
-                returnVar: 'noMatter',
-                method: 'get',
-                path: 'some/path',
-                pipe: [{
-                    module: '@chillapi/builtin/assert/AssertDelegate',
-                    delegateClass: 'AssertDelegate',
-                    truthyParam: 'noParam',
-                    failResponseCode: 400,
-                    failResponseMessage: 'test failure'
-                }],
-                transactional: false,
-            },
-            {},
-            null,
-            (err: any) => expect(err).toEqual({ message: 'test failure', responseCode: 400 })
-        ],
-        [
-            'Stub Delegate',
-            null,
-            {
-                kind: 'MethodDelegate',
-                returnVar: 'noMatter',
-                method: 'get',
-                path: 'some/path',
-                pipe: [{
-                    module: '@chillapi/builtin/stub/StubDelegate',
-                    delegateClass: 'StubDelegate',
-                    assign: 'stubVar',
-                    payload: { some: 'payload' }
-                }],
-                transactional: false,
-            },
-            {},
-            (params: any) => expect(params.stubVar).toEqual({ some: 'payload' }),
-            null
-        ],
-        [
-            'Mapping Delegate',
-            null,
-            {
-                kind: 'MethodDelegate',
-                returnVar: 'noMatter',
-                method: 'get',
-                path: 'some/path',
-                pipe: [{
-                    module: '@chillapi/builtin/mapping/MappingDelegate',
-                    delegateClass: 'MappingDelegate',
-                    from: 'aField',
-                    to: 'anotherField',
-                    isArray: false,
-                    builtIn: 'snakeToCamel'
-                }],
-                transactional: false,
-            },
-            { 'aField': { 'some_property': 'value' } },
-            (params: any) => expect(params.anotherField).toEqual({ 'someProperty': 'value' }),
-            null
-        ],
-        [
             'Custom Delegate',
             () => jest.mock('a-path', () => (contextArg: any, paramArg: any) => paramArg.test = 'value', { virtual: true }),
             {

@@ -1,12 +1,13 @@
 import yargs from 'yargs';
 import 'module-alias/register';
+import { generate } from './service/generate/GenerateTools';
 
 const argv = yargs
     .command('start', 'Starts a ChillAPI environment', y =>
-        y.alias('c', 'configPath')
+        y.alias('p', 'configPath')
             .nargs('c', 1)
-            .describe('c', 'Configuration file, defaults to .chill-api/config.yaml')
-            .default('c', '.chill-api/config.yaml')
+            .describe('c', 'Root path of the configuration files, defaults to .chill-api')
+            .default('c', '.chill-api')
             .alias('h', 'hostname')
             .nargs('h', 1)
             .describe('h', 'Hostname to bind the API server')
@@ -19,27 +20,25 @@ const argv = yargs
             .example('$0', 'Starts the ChillAPI backend, using a local file names config.yaml, or the default configuration'),
         args => console.log("start")
     )
-    .command('init', 'Initializes the ChillAPI environment in the current folder', y =>
+    .command('generate', 'Generates ChillAPI configuration stubs based on existing OpenAPI spec', y =>
         y.alias('a', 'apiPath')
             .nargs('a', 1)
             .describe('a', 'OpenAPI 3.0 API descriptor file (yaml)')
-            .alias('p', 'privateKeyPassPhrase')
-            .nargs('p', 1)
-            .describe('p', 'Pass phrase to use for the security private key')
-            .default('p', 'changeme')
-            .example('$0 --api /path/to/my/openapi.yaml', 'Generates ChillAPI configuration for the provided API'),
-        args => console.log("generate")
-    )
-    .command('update', 'Updates an existing ChillAPI environment', y =>
-        y.alias('a', 'apiPath')
-            .nargs('a', 1)
-            .describe('a', 'OpenAPI 3.0 API descriptor file (yaml)')
-            .alias('c', 'configPath')
-            .nargs('c', 1)
-            .describe('c', 'Configuration file, defaults to ./chill-api-config.yaml')
-            .default('c', '.chill-api/config.yaml')
-            .example('$0 --config /path/to/my/config.yaml', 'Updates the ChillAPI metadata using the provided path'),
-        args => console.log("update")
+            .alias('p', 'targetPath')
+            .nargs('t', 1)
+            .describe('t', 'Root path for the Chill API configuration files')
+            .default('t', '.chill-api')
+            .alias('m', 'moduleName')
+            .nargs('m', 1)
+            .describe('m', 'Module to be used for stub generation; if not present, it will be detected among dependencies')
+            .example('$0 --apiPath /path/to/my/openapi.yaml -t ./chillapi', 'Generates ChillAPI configuration for the provided API, in a folder called chillapi'),
+        args => {
+            try {
+                generate(args.apiPath, args.rootPath, args.moduleName);
+            } catch (err) {
+                console.error('Config generation failed');
+            }
+        }
     )
     .help('?')
     .alias('?', 'help')
