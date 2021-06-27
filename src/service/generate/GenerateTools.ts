@@ -1,5 +1,5 @@
 import { ModuleLoader, OpenAPIV3 } from '@chillapi/api';
-import { load } from '@chillapi/module-discovery';
+import { load } from '@chillapi/module-discovery/dist';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { safeLoad } from 'js-yaml';
@@ -8,7 +8,7 @@ import { safeLoad } from 'js-yaml';
 export async function generate(apiPath: OpenAPIV3, rootPath: string, moduleName?: string): Promise<void> {
     try {
         const api = await loadApi(this.config.apiPath);
-        const module: ModuleLoader = moduleName ? require(moduleName) : this.loadModule();
+        const module: ModuleLoader = moduleName ? require(moduleName) : await this.loadModule();
         await module.generateStubs(api, rootPath);
         return Promise.resolve();
     } catch (err) {
@@ -16,15 +16,15 @@ export async function generate(apiPath: OpenAPIV3, rootPath: string, moduleName?
     }
 }
 
-export function loadModule(): ModuleLoader {
-    const chillAPIModulesWithGenerate: ModuleLoader[] = load('generateStubs');
+export async function loadModule(): Promise<ModuleLoader> {
+    const chillAPIModulesWithGenerate: ModuleLoader[] = await load('generateStubs');
     if (chillAPIModulesWithGenerate.length === 0) {
-        throw new Error("No seed generator found within project dependencies. Try adding '@chillapi/stub' to your project.json.");
+        return Promise.reject("No seed generator found within project dependencies. Try adding '@chillapi/stub' to your project.json.");
     }
     if (chillAPIModulesWithGenerate.length > 1) {
-        throw new Error(`Multiple seed generators found: ${chillAPIModulesWithGenerate.join(';')}. Run the generate command with a specific module, or leave only one seed generator.`)
+        return Promise.reject(`Multiple seed generators found: ${chillAPIModulesWithGenerate.join(';')}. Run the generate command with a specific module, or leave only one seed generator.`)
     }
-    return chillAPIModulesWithGenerate[0];
+    return Promise.resolve(chillAPIModulesWithGenerate[0]);
 }
 
 export async function loadApi(apiPath: string): Promise<OpenAPIV3> {
