@@ -31,7 +31,7 @@ export async function loadApi(apiPath: string): Promise<OpenAPIV3> {
     if (existsSync(apiPath)) {
         try {
             const apiContent = await readFile(apiPath, 'utf-8');
-            return yamlLoad(apiContent) as OpenAPIV3;
+            return Promise.resolve(yamlLoad(apiContent) as OpenAPIV3);
         } catch (err) {
             console.error(`Unable to load API file from ${apiPath}`);
             console.error(err);
