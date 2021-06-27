@@ -1,8 +1,9 @@
 {
   "name": "@chillapi/core",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "ChillAPI development platform",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "prebuild": "rimraf dist/*",
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
@@ -33,7 +34,7 @@
   },
   "homepage": "https://github.com/chillapi#readme",
   "dependencies": {
-    "@chillapi/api": "1.0.19",
+    "@chillapi/api": "1.0.20",
     "@chillapi/module-discovery": "1.0.4",
     "cors": "^2.8.5",
     "express": "^4.17.1",

@@ -1,5 +1,5 @@
 import { ModuleLoader, OpenAPIV3 } from '@chillapi/api';
-import { load } from '@chillapi/module-discovery/dist';
+import { load } from '@chillapi/module-discovery';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { load as yamlLoad } from 'js-yaml';
