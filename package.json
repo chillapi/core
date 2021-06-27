@@ -34,7 +34,7 @@
   "homepage": "https://github.com/chillapi#readme",
   "dependencies": {
     "@chillapi/api": "1.0.19",
-    "@chillapi/module-discovery":"1.0.0",
+    "@chillapi/module-discovery": "1.0.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-openapi-validator": "^4.0.2",
