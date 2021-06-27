@@ -1,6 +1,6 @@
-import { ModuleLoader } from '@chillapi/api';
 import { OpenAPIV3 } from '@chillapi/api/dist/openapiv3';
 import { load } from '@chillapi/module-discovery';
+
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { load as yamlLoad } from 'js-yaml';
@@ -17,15 +17,15 @@ export async function generate(apiPath: string, rootPath: string, moduleName?: s
     }
 }
 
-export async function loadModule(): Promise<ModuleLoader> {
-    const chillAPIModulesWithGenerate: ModuleLoader[] = await load('generateStubs');
+export async function loadModule(): Promise<any> {
+    const chillAPIModulesWithGenerate: any[] = await load('generateStubs');
     if (chillAPIModulesWithGenerate.length === 0) {
         return Promise.reject("No seed generator found within project dependencies. Try adding '@chillapi/stub' to your project.json.");
     }
     if (chillAPIModulesWithGenerate.length > 1) {
         return Promise.reject(`Multiple seed generators found: ${chillAPIModulesWithGenerate.join(';')}. Run the generate command with a specific module, or leave only one seed generator.`)
     }
-    return Promise.resolve(chillAPIModulesWithGenerate[0]);
+    return Promise.resolve(chillAPIModulesWithGenerate[0].default);
 }
 
 export async function loadApi(apiPath: string): Promise<OpenAPIV3> {
