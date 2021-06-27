@@ -1,5 +1,4 @@
 import yargs from 'yargs';
-import 'module-alias/register';
 import { generate } from './service/generate/GenerateTools';
 
 // tslint:disable-next-line:no-unused-expression
