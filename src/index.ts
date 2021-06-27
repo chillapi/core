@@ -2,7 +2,8 @@ import yargs from 'yargs';
 import 'module-alias/register';
 import { generate } from './service/generate/GenerateTools';
 
-const argv = yargs
+// tslint:disable-next-line:no-unused-expression
+yargs
     .command('start', 'Starts a ChillAPI environment', y =>
         y.alias('p', 'configPath')
             .nargs('c', 1)
@@ -18,7 +19,7 @@ const argv = yargs
             .default('p', '9000')
             .example('$0 --config /path/to/my/config.yaml', 'Starts the ChillAPI backend for the provided configuration')
             .example('$0', 'Starts the ChillAPI backend, using a local file names config.yaml, or the default configuration'),
-        args => console.log("start")
+       async args => console.log("start")
     )
     .command('generate', 'Generates ChillAPI configuration stubs based on existing OpenAPI spec', y =>
         y.alias('a', 'apiPath')
@@ -32,9 +33,9 @@ const argv = yargs
             .nargs('m', 1)
             .describe('m', 'Module to be used for stub generation; if not present, it will be detected among dependencies')
             .example('$0 --apiPath /path/to/my/openapi.yaml -t ./chillapi', 'Generates ChillAPI configuration for the provided API, in a folder called chillapi'),
-        args => {
+        async args => {
             try {
-                generate(args.apiPath, args.rootPath, args.moduleName);
+                await generate(args.apiPath, args.rootPath, args.moduleName);
             } catch (err) {
                 console.error('Config generation failed');
             }

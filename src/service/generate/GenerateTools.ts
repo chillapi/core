@@ -5,9 +5,9 @@ import { readFile } from 'fs/promises';
 import { safeLoad } from 'js-yaml';
 
 
-export async function generate(apiPath: OpenAPIV3, rootPath: string, moduleName?: string): Promise<void> {
+export async function generate(apiPath: string, rootPath: string, moduleName?: string): Promise<void> {
     try {
-        const api = await loadApi(this.config.apiPath);
+        const api = await loadApi(apiPath);
         const module: ModuleLoader = moduleName ? require(moduleName) : await this.loadModule();
         await module.generateStubs(api, rootPath);
         return Promise.resolve();
