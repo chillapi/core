@@ -1,4 +1,5 @@
-import { ModuleLoader, OpenAPIV3 } from '@chillapi/api';
+import { ModuleLoader } from '@chillapi/api';
+import { OpenAPIV3 } from '@chillapi/api/dist/openapiv3';
 import { load } from '@chillapi/module-discovery';
 import { existsSync } from 'fs';
 import { readFile } from 'fs/promises';
