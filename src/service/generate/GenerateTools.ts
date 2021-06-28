@@ -9,8 +9,9 @@ import { load as yamlLoad } from 'js-yaml';
 export async function generate(apiPath: string, rootPath: string, moduleName?: string): Promise<void> {
     try {
         const api = await loadApi(apiPath);
-        const moduleClass = moduleName ? require(moduleName) : await this.loadModule();
-        await new moduleClass().generateStubs(api, rootPath);
+        const inferredModuleName = moduleName || await loadModule();
+        console.info(`Using ${inferredModuleName} for stub generation`);
+        await require(inferredModuleName).generateStubs(api, rootPath);
         return Promise.resolve();
     } catch (err) {
         return Promise.reject(err);
@@ -18,6 +19,7 @@ export async function generate(apiPath: string, rootPath: string, moduleName?: s
 }
 
 export async function loadModule(): Promise<any> {
+    console.info('Auto-disovering module to use for stub generation');
     const chillAPIModulesWithGenerate: any[] = await load('generateStubs');
     if (chillAPIModulesWithGenerate.length === 0) {
         return Promise.reject("No seed generator found within project dependencies. Try adding '@chillapi/stub' to your project.json.");
@@ -25,7 +27,7 @@ export async function loadModule(): Promise<any> {
     if (chillAPIModulesWithGenerate.length > 1) {
         return Promise.reject(`Multiple seed generators found: ${chillAPIModulesWithGenerate.join(';')}. Run the generate command with a specific module, or leave only one seed generator.`)
     }
-    return Promise.resolve(chillAPIModulesWithGenerate[0].default);
+    return Promise.resolve(chillAPIModulesWithGenerate[0]);
 }
 
 export async function loadApi(apiPath: string): Promise<OpenAPIV3> {
