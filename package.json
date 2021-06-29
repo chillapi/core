@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/chillapi#readme",
   "dependencies": {
-    "@chillapi/api": "1.0.23",
+    "@chillapi/api": "1.0.27",
     "@chillapi/module-discovery": "1.0.6",
     "cors": "^2.8.5",
     "express": "^4.17.1",

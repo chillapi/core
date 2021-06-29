@@ -1,9 +1,12 @@
+import { existsSync } from 'fs';
+import { readFile, writeFile } from 'fs/promises';
+import { resolve } from 'path';
+import { load as yamlLoad, dump } from 'js-yaml';
+
 import { OpenAPIV3 } from '@chillapi/api/dist/openapiv3';
 import { load } from '@chillapi/module-discovery';
 
-import { existsSync } from 'fs';
-import { readFile } from 'fs/promises';
-import { load as yamlLoad } from 'js-yaml';
+import { BootstrapConfig } from '../../model/BootstrapConfig';
 
 
 export async function generate(apiPath: string, rootPath: string, moduleName?: string): Promise<void> {
@@ -18,7 +21,7 @@ export async function generate(apiPath: string, rootPath: string, moduleName?: s
     }
 }
 
-export async function loadModule(): Promise<any> {
+async function loadModule(): Promise<any> {
     console.info('Auto-disovering module to use for stub generation');
     const chillAPIModulesWithGenerate: any[] = await load('generateStubs');
     if (chillAPIModulesWithGenerate.length === 0) {
@@ -30,7 +33,7 @@ export async function loadModule(): Promise<any> {
     return Promise.resolve(chillAPIModulesWithGenerate[0]);
 }
 
-export async function loadApi(apiPath: string): Promise<OpenAPIV3> {
+async function loadApi(apiPath: string): Promise<OpenAPIV3> {
     if (existsSync(apiPath)) {
         try {
             const apiContent = await readFile(apiPath, 'utf-8');
@@ -40,5 +43,19 @@ export async function loadApi(apiPath: string): Promise<OpenAPIV3> {
             console.error(err);
             return Promise.reject(err);
         }
+    }
+}
+
+async function writeBaseConfig(apiPath: string, rootPath: string): Promise<void> {
+    try {
+        const baseConfig: BootstrapConfig = {
+            kind: 'Bootstrap',
+            id: 'bootstrap/main',
+            apiPath
+        }
+        await writeFile(resolve(rootPath, 'main.yaml'), dump(baseConfig));
+        return Promise.resolve();
+    } catch (err) {
+        return Promise.reject(err);
     }
 }

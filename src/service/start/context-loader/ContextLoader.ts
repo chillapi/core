@@ -1,6 +1,6 @@
 import { Config } from "@chillapi/api";
 
-export interface ContextLoader {
+export interface ContextLoader<T extends Config,U> {
     matches(configFile: Config): boolean;
-    load(configFile: Config): Promise<any>
+    load(configFile: T): Promise<U>
 }

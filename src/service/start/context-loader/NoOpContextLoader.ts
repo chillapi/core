@@ -1,7 +1,7 @@
 import { Config } from "@chillapi/api";
 import { ContextLoader } from "./ContextLoader";
 
-export class NoOpContextLoader implements ContextLoader {
+export class NoOpContextLoader implements ContextLoader<Config, any> {
 
     matches(configFile: Config): boolean {
         return false;

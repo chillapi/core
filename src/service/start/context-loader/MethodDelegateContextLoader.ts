@@ -1,17 +1,16 @@
 import { Config, MethodDelegate, MethodDelegateConfig, Delegate, DelegateConfig } from "@chillapi/api";
 import { ContextLoader } from "./ContextLoader";
 
-export class MethodDelegateContextLoader implements ContextLoader {
+export class MethodDelegateContextLoader implements ContextLoader<MethodDelegateConfig,MethodDelegate> {
     matches(configFile: Config): boolean {
         return configFile.kind === 'MethodDelegate';
     }
 
-    async load(configFile: Config): Promise<MethodDelegate> {
-        const methodDelegateConfig: MethodDelegateConfig = configFile as MethodDelegateConfig;
-        const pipe: Delegate[] = methodDelegateConfig.pipe.map(delegateConfig => this.loadDelegate(delegateConfig));
+    async load(configFile: MethodDelegateConfig): Promise<MethodDelegate> {
+        const pipe: Delegate[] = configFile.pipe.map(delegateConfig => this.loadDelegate(delegateConfig));
         const methodDelegate: MethodDelegate = {
             pipe,
-            config: methodDelegateConfig
+            config: configFile
         };
         return Promise.resolve(methodDelegate);
 
