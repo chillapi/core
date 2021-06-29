@@ -20,6 +20,9 @@ export async function loadConfigurations(basePath: string): Promise<Context> {
             const configs: Config[] = yaml.loadAll(await readFile(f, { encoding: 'utf-8' }));
             for (const doc of configs.filter(cfg => !!cfg.kind)) {
                 const contextLoader: ContextLoader = contextLoaders.find(ctxl => ctxl.matches(doc)) || new NoOpContextLoader();
+                if (!context[doc.kind]) {
+                    context[doc.kind] = {};
+                }
                 context[doc.kind][doc.id] = await contextLoader.load(doc);
                 console.log(`Loaded ${doc.kind} [${doc.id} from ${f}]`);
             };
