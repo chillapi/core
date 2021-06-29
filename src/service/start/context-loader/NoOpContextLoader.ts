@@ -1,9 +1,5 @@
 import { Config } from "@chillapi/api";
-
-export interface ContextLoader {
-    matches(configFile: Config): boolean;
-    load(configFile: Config): Promise<any>
-}
+import { ContextLoader } from "./ContextLoader";
 
 export class NoOpContextLoader implements ContextLoader {
 

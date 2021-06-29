@@ -1,10 +1,12 @@
 import yargs from 'yargs';
 import { generate } from './service/generate/GenerateTools';
+import { start } from './service/start/StartTools';
+
 
 // tslint:disable-next-line:no-unused-expression
 yargs
     .command('start', 'Starts a ChillAPI environment', y =>
-        y.alias('p', 'configPath')
+        y.alias('c', 'configPath')
             .nargs('c', 1)
             .describe('c', 'Root path of the configuration files, defaults to .chill-api')
             .default('c', '.chill-api')
@@ -16,9 +18,16 @@ yargs
             .nargs('p', 1)
             .describe('p', 'Port to bind the API server')
             .default('p', '9000')
-            .example('$0 --config /path/to/my/config.yaml', 'Starts the ChillAPI backend for the provided configuration')
-            .example('$0', 'Starts the ChillAPI backend, using a local file names config.yaml, or the default configuration'),
-        async args => console.log("start")
+            .example('$0 --configPath /path/to/my/config.yaml', 'Starts the ChillAPI backend for the provided configuration')
+            .example('$0', 'Starts the ChillAPI backend, using the local .chill-api folder as base configuration path, or the default configuration'),
+        async args => {
+            try {
+                await start(args.configPath)
+            } catch (err) {
+                console.error('Start failed');
+                console.error(err);
+            }
+        }
     )
     .command('generate', 'Generates ChillAPI configuration stubs based on existing OpenAPI spec', y =>
         y.alias('a', 'apiPath')
