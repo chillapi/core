@@ -22,7 +22,7 @@ yargs
             .example('$0', 'Starts the ChillAPI backend, using the local .chill-api folder as base configuration path, or the default configuration'),
         async args => {
             try {
-                await start(args.configPath)
+                await start(args.configPath, args.hostname, args.port);
             } catch (err) {
                 console.error('Start failed');
                 console.error(err);
