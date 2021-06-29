@@ -16,7 +16,7 @@ export async function start(basePath: string): Promise<void> {
 export async function loadConfigurations(basePath: string): Promise<Context> {
     const context: Context = {};
     try {
-        for await (const f of this.getConfigFiles(basePath)) {
+        for await (const f of getConfigFiles(basePath)) {
             const configs: Config[] = yaml.loadAll(await readFile(f, { encoding: 'utf-8' }));
             for (const doc of configs.filter(cfg => !!cfg.kind)) {
                 const contextLoader: ContextLoader = contextLoaders.find(ctxl => ctxl.matches(doc)) || new NoOpContextLoader();
@@ -36,7 +36,7 @@ export async function* getConfigFiles(dir: string): AsyncIterableIterator<string
     for (const dirent of dirents) {
         const res = resolve(dir, dirent.name);
         if (dirent.isDirectory()) {
-            yield* this.getConfigFiles(res);
+            yield* getConfigFiles(res);
         } else {
             if (CONFIG_PATTERN.test(res)) {
                 yield res;
