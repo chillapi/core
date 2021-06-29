@@ -15,6 +15,7 @@ export async function generate(apiPath: string, rootPath: string, moduleName?: s
         const inferredModuleName = moduleName || await loadModule();
         console.info(`Using ${inferredModuleName} for stub generation`);
         await require(inferredModuleName).generateStubs(api, rootPath);
+        await writeBaseConfig(apiPath, rootPath);
         return Promise.resolve();
     } catch (err) {
         return Promise.reject(err);
