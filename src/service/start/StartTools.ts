@@ -80,7 +80,7 @@ export async function start(basePath: string, host: string, port: number): Promi
             //     }
             //     middleware.push(upload.fields(uploadFields));
             // }
-            this.expressRequest(method, opPath, middleware, async (aReq: any, aRes: any) => {
+            expressRequest(method, opPath, middleware, async (aReq: any, aRes: any) => {
                 const methodDelegate = Object.values(ctx.MethodDelegate).find(d => d.config.path === apiPath && d.config.method === method)
                 if (!methodDelegate) {
                     aRes.status(501).send('Method not yet implemented');
@@ -179,5 +179,27 @@ async function* getConfigFiles(dir: string): AsyncIterableIterator<string> {
                 yield res;
             }
         }
+    }
+}
+
+// TODO write a better impl
+function expressRequest(method: string, path: string, auth: any, handler: (req: any, res: any) => Promise<void>): void {
+    // return express.prototype[method].bind(this.app)
+    switch (method.toLowerCase()) {
+        case 'get':
+            !!auth ? this.app.get(path, auth, handler) : this.app.get(path, handler);
+            break;
+        case 'post':
+            !!auth ? this.app.post(path, auth, handler) : this.app.post(path, handler);
+            break;
+        case 'delete':
+            !!auth ? this.app.delete(path, auth, handler) : this.app.delete(path, handler);
+            break;
+        case 'put':
+            !!auth ? this.app.put(path, auth, handler) : this.app.put(path, handler);
+            break;
+        case 'patch':
+            !!auth ? this.app.patch(path, auth, handler) : this.app.patch(path, handler);
+            break;
     }
 }
