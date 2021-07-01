@@ -23,9 +23,9 @@ export async function start(basePath: string, host: string, port: number): Promi
     const ctx: Context = await loadConfigurations(basePath);
 
     console.log('Starting Express server');
-    this.app = express();
+    const app = express();
 
-    this.app.use(express.json())
+    app.use(express.json())
 
     const bootstrap: Bootstrap = ctx.Bootstrap && Object.values(ctx.Bootstrap)[0] as Bootstrap;
 
@@ -34,15 +34,15 @@ export async function start(basePath: string, host: string, port: number): Promi
     }
 
     const corsOptions = { origin: bootstrap.corsOrigin };
-    this.app.use(cors(corsOptions));
-    this.app.options("*", cors(corsOptions));
+    app.use(cors(corsOptions));
+    app.options("*", cors(corsOptions));
     bootstrap.api.servers = [{ url: `${bootstrap.basePath}` }];
-    this.app.use(`${bootstrap.basePath}/api-docs`, swaggerUi.serve, swaggerUi.setup(bootstrap.api));
-    this.app.use(OpenApiValidator.middleware({
+    app.use(`${bootstrap.basePath}/api-docs`, swaggerUi.serve, swaggerUi.setup(bootstrap.api));
+    app.use(OpenApiValidator.middleware({
         apiSpec: bootstrap.api as any
     }));
 
-    this.app.use(async (err: any, req: any, res: any, next: any) => {
+    app.use(async (err: any, req: any, res: any, next: any) => {
         console.log(err);
         // format error
         res.status(err.status || 500).json({
@@ -80,7 +80,7 @@ export async function start(basePath: string, host: string, port: number): Promi
             //     }
             //     middleware.push(upload.fields(uploadFields));
             // }
-            expressRequest(method, opPath, middleware, async (aReq: any, aRes: any) => {
+            expressRequest(app, method, opPath, middleware, async (aReq: any, aRes: any) => {
                 const methodDelegate = Object.values(ctx.MethodDelegate).find(d => d.config.path === apiPath && d.config.method === method)
                 if (!methodDelegate) {
                     aRes.status(501).send('Method not yet implemented');
@@ -89,15 +89,10 @@ export async function start(basePath: string, host: string, port: number): Promi
                 try {
                     const params: any = { ...aReq };
 
-                    if (methodDelegate.transactional) {
-                        this.context.persistence.beginTransaction();
-                    }
                     for (const delegate of methodDelegate.pipe) {
-                        await delegate.process(this.context, params);
+                        await delegate.process(ctx, params);
                     }
-                    if (methodDelegate.transactional) {
-                        this.context.persistence.commitTransaction();
-                    }
+
                     if (methodDelegate.returnVar) {
                         const responseSpec = apiConfig.responses[200]?.content;
                         if (responseSpec) {
@@ -125,9 +120,6 @@ export async function start(basePath: string, host: string, port: number): Promi
                         aRes.status(200).send();
                     }
                 } catch (err) {
-                    if (methodDelegate.transactional) {
-                        this.context.persistence.rollbackTransaction();
-                    }
                     console.error(err);
                     if (err.responseCode) {
                         aRes.status(err.responseCode).send(err.responseMessage);
@@ -141,7 +133,7 @@ export async function start(basePath: string, host: string, port: number): Promi
     }
 
     // start the express server
-    this.app.listen(port, host, () => {
+    app.listen(port, host, () => {
         // tslint:disable-next-line:no-console
         console.log(`server started at http://${host}:${port}`);
     });
@@ -183,23 +175,23 @@ async function* getConfigFiles(dir: string): AsyncIterableIterator<string> {
 }
 
 // TODO write a better impl
-function expressRequest(method: string, path: string, auth: any, handler: (req: any, res: any) => Promise<void>): void {
-    // return express.prototype[method].bind(this.app)
+function expressRequest(app: any, method: string, path: string, auth: any, handler: (req: any, res: any) => Promise<void>): void {
+    // return express.prototype[method].bind(app)
     switch (method.toLowerCase()) {
         case 'get':
-            !!auth ? this.app.get(path, auth, handler) : this.app.get(path, handler);
+            !!auth ? app.get(path, auth, handler) : app.get(path, handler);
             break;
         case 'post':
-            !!auth ? this.app.post(path, auth, handler) : this.app.post(path, handler);
+            !!auth ? app.post(path, auth, handler) : app.post(path, handler);
             break;
         case 'delete':
-            !!auth ? this.app.delete(path, auth, handler) : this.app.delete(path, handler);
+            !!auth ? app.delete(path, auth, handler) : app.delete(path, handler);
             break;
         case 'put':
-            !!auth ? this.app.put(path, auth, handler) : this.app.put(path, handler);
+            !!auth ? app.put(path, auth, handler) : app.put(path, handler);
             break;
         case 'patch':
-            !!auth ? this.app.patch(path, auth, handler) : this.app.patch(path, handler);
+            !!auth ? app.patch(path, auth, handler) : app.patch(path, handler);
             break;
     }
 }
